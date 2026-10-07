@@ -188,11 +188,27 @@ body.panel-open .app { opacity: 0.35; filter: blur(3px); transform: scale(0.985)
 .card[data-weather="clear"]:hover .sun { transform: scale(1.06); }
 
 /* --- river: waterfall over the edge, flow bars --- */
-.fall { top: -16px; right: 34px; width: 64px; height: 84px; }
-.ledge { position: absolute; top: 0; left: 0; right: 0; height: 12px; border-radius: 8px; background: linear-gradient(#ffffff, #cfe3f5); box-shadow: 0 6px 12px rgba(4, 24, 46, 0.35); }
-.streaks { position: absolute; top: 10px; left: 6px; right: 6px; height: 72px; -webkit-mask-image: linear-gradient(#000 35%, transparent); mask-image: linear-gradient(#000 35%, transparent); }
-.streaks i { position: absolute; top: 0; bottom: 0; width: 3px; border-radius: 3px; left: var(--x); background: repeating-linear-gradient(to bottom, rgba(196, 226, 255, 0.95) 0 14px, transparent 14px 30px); background-size: 100% 30px; animation: streak var(--dur, 0.6s) linear infinite; animation-delay: var(--dl); }
-@keyframes streak { to { background-position: 0 30px; } }
+.rv-mount { top: -60px; right: 22px; width: 160px; height: 86px; filter: drop-shadow(0 10px 12px rgba(4, 24, 46, 0.35)); --kR: 0.3; --kA: 0.2; --rs: 5s; }
+.rv-mount > svg { position: absolute; left: 0; top: 0; width: 160px; height: 64px; overflow: visible; }
+.rv-peaks { transform-box: fill-box; transform-origin: 50% 100%; transition: transform 0.7s cubic-bezier(0.3, 1.3, 0.5, 1); }
+#riverCard:hover .rv-peaks { transform: scale(1.05, 1.08); }
+.rv-sn { transition: transform 0.7s cubic-bezier(0.3, 1.3, 0.5, 1); transform-box: fill-box; transform-origin: 50% 100%; }
+.rv-glint { animation: rv-twinkle 3.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes rv-twinkle { 0%, 55%, 100% { opacity: 0; transform: scale(0.3); } 70% { opacity: 1; transform: scale(1); } 85% { opacity: 0; transform: scale(0.5); } }
+.is-in .rv-peaks { animation: rv-rise 1s cubic-bezier(0.2, 0.9, 0.3, 1.1) 0.7s backwards; }
+@keyframes rv-rise { from { transform: scaleY(0.3); opacity: 0; } }
+.rv-pool { position: absolute; left: 0; bottom: 0; width: 160px; height: 38px; border-radius: 19px; overflow: hidden; background: linear-gradient(#7cc0ff, #3b8fd6); box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.6), inset 0 -6px 10px rgba(11, 42, 67, 0.25); transform-origin: 50% 100%; transition: transform 0.55s cubic-bezier(0.3, 1.4, 0.5, 1); }
+#riverCard:hover .rv-pool { transform: scaleY(1.18); }
+.rv-pw { position: absolute; left: 0; width: 200%; fill: var(--c); animation: rv-wave var(--d) linear infinite; animation-duration: calc(var(--d) / var(--boost, 1)); transition: height 0.7s cubic-bezier(0.3, 1.2, 0.5, 1); }
+.rv-pw.rv-b { top: 0; height: calc(12px + var(--kA) * 18px); --c: rgba(255, 255, 255, 0.55); --d: calc(var(--rs) * 1.6); animation-direction: reverse; }
+.rv-pw.rv-f { top: 5px; height: calc(14px + var(--kR) * 22px); --c: rgba(255, 255, 255, 0.9); --d: var(--rs); }
+.rv-pw.rv-l { bottom: 0; top: auto; height: 22px; --c: rgba(24, 96, 170, 0.45); --d: calc(var(--rs) * 1.3); }
+@keyframes rv-wave { to { transform: translateX(-50%); } }
+.rv-spark { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #fff; left: var(--x); top: 10px; opacity: 0; animation: rv-spk 2.8s ease-in-out var(--dl) infinite; }
+@keyframes rv-spk { 0%, 100% { opacity: 0; transform: scale(0.3); } 40% { opacity: 0.95; transform: scale(1); } 70% { opacity: 0; transform: translateY(-3px) scale(0.5); } }
+@media (max-width: 480px) { .rv-mount { transform-origin: 100% 100%; right: 14px; } }
+#riverCard:hover { --boost: 2.2; }
+.is-in .rv-mount { animation: dropin 1s cubic-bezier(0.3, 1.5, 0.5, 1) 1.2s backwards; }
 .river { display: flex; flex-direction: column; gap: 24px; flex: 1; }
 .flow { display: flex; flex-direction: column; gap: 12px; }
 .flow .info .temp { width: 140px; }
@@ -694,7 +710,29 @@ body.panel-open .panel { transform: none; visibility: visible; transition-delay:
     <div class="cell reveal" style="--i:7">
       <article class="card" id="riverCard">
         <div class="glass"></div>
-        <div class="hang fall" id="fall" aria-hidden="true"><span class="ledge"></span><div class="streaks" id="streaks"></div></div>
+      <div class="hang rv-mount" id="rvMount" aria-hidden="true">
+        <svg viewBox="0 0 160 64">
+          <defs>
+            <linearGradient id="mtA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3f0fb"/><stop offset="0.55" stop-color="#a9c7e4"/><stop offset="1" stop-color="#6c93bd"/></linearGradient>
+            <linearGradient id="mtB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9ddf0"/><stop offset="1" stop-color="#7fa3c8"/></linearGradient>
+          </defs>
+          <g class="rv-peaks">
+            <path d="M84 58 L118 18 L158 58Z" fill="url(#mtB)"/>
+            <path d="M118 18 L127 29 L121 27 L117 33 L112 27 L108 29Z" fill="#ffffff" opacity="0.95"/>
+            <path d="M2 58 L54 4 L112 58Z" fill="url(#mtA)"/>
+            <path d="M54 4 L68 20 L62 18 L54 27 L46 18 L40 20Z" fill="#ffffff"/>
+            <path d="M54 4 L112 58 L82 58 L64 30Z" fill="#1d3f66" opacity="0.16"/>
+            <path d="M46 14 L18 52 L26 52 L50 22Z" fill="#ffffff" opacity="0.4"/>
+            <path class="rv-glint" d="M54 10 l1.6 3.4 3.4 1.6 -3.4 1.6 -1.6 3.4 -1.6 -3.4 -3.4 -1.6 3.4 -1.6z" fill="#ffffff"/>
+          </g>
+        </svg>
+        <div class="rv-pool">
+          <svg class="rv-pw rv-b" viewBox="0 0 320 40" preserveAspectRatio="none"><path d="M0 14 Q40 2 80 14 T160 14 T240 14 T320 14 V40 H0Z"/></svg>
+          <svg class="rv-pw rv-f" viewBox="0 0 320 40" preserveAspectRatio="none"><path d="M0 14 Q40 26 80 14 T160 14 T240 14 T320 14 V40 H0Z"/></svg>
+          <svg class="rv-pw rv-l" viewBox="0 0 320 40" preserveAspectRatio="none"><path d="M0 16 Q40 6 80 16 T160 16 T240 16 T320 16 V40 H0Z"/></svg>
+          <span class="rv-spark" style="--x:30px;--dl:0s"></span><span class="rv-spark" style="--x:74px;--dl:-1.1s"></span><span class="rv-spark" style="--x:118px;--dl:-2s"></span>
+        </div>
+      </div>
         <div class="title"><span class="ibox"><svg class="ic"><use href="#i-waves"/></svg></span><span class="label">River Flow</span></div>
         <div class="river">
           <div class="flow">
@@ -946,7 +984,8 @@ body.panel-open .panel { transform: none; visibility: visible; transition-delay:
       { name: 'Pully', where: 'Vaud · 08:10', off: -0.5 },
       { name: 'Buchillon', where: 'Vaud · 08:20', off: -0.8 }
     ],
-    rhoneFlow: 108
+    rhoneFlow: 108,
+    arveFlow: 43
   };
   var BANDS = [
     { n: 'Very cold', max: 15, sb: '#e6f4ff', sf: '#216ba6', c: '#bfe7ff', q: 'Cold shock risk. Stay in the shallows and keep it very short.' },
@@ -1021,16 +1060,11 @@ body.panel-open .panel { transform: none; visibility: visible; transition-delay:
       if (i >= 28) el.className = 'off';
       dots.appendChild(el);
     }
-    // waterfall streaks, speed follows the Rhône flow
-    var dur2 = clamp(60 / DATA.rhoneFlow, 0.35, 1.6);
-    var st = $('#streaks');
-    [0, 22, 44, 66, 88].forEach(function (x, k) {
-      var s = document.createElement('i');
-      s.style.setProperty('--x', 'calc(' + x + '% - ' + (x / 100 * 3) + 'px)');
-      s.style.setProperty('--dur', (dur2 * (0.9 + (k % 3) * 0.12)).toFixed(2) + 's');
-      s.style.setProperty('--dl', (-k * 0.17).toFixed(2) + 's');
-      st.appendChild(s);
-    });
+    // river scene: wave height and speed follow the Rhône and Arve flow
+    var rvm = $('#rvMount');
+    rvm.style.setProperty('--kR', clamp(DATA.rhoneFlow / 400, 0.08, 1).toFixed(2));
+    rvm.style.setProperty('--kA', clamp(DATA.arveFlow / 250, 0.08, 1).toFixed(2));
+    rvm.style.setProperty('--rs', clamp(6 - (DATA.rhoneFlow + DATA.arveFlow) / 650 * 4, 1.8, 6).toFixed(2) + 's');
     // measurement point rows
     var mps = $('#mps');
     DATA.points.forEach(function (p, k) {
